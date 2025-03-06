@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import { Select, Spin } from 'antd';
+import axios from 'axios';
 
 interface PriceData {
   pair: string;
@@ -13,12 +15,40 @@ interface PriceData {
   timestamp: string;
 }
 
+interface Symbol {
+  symbol: string;
+  baseCoin: string;
+  quoteCoin: string;
+  status: string;
+}
+
 const Info = () => {
   const [socket, setSocket] = useState<any>(null);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
-  const PAIR = 'BTCUSDT'; // Приклад пари для підписки
+  const [symbols, setSymbols] = useState<Symbol[]>([]);
+  const [selectedPair, setSelectedPair] = useState<string>('BTCUSDT');
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Завантаження списку символів
+  useEffect(() => {
+    const fetchSymbols = async () => {
+      try {
+        const response = await axios.get<Symbol[]>('http://localhost:3000/bybit/futures/symbols');
+        console.log(response.data);
+        setSymbols(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Помилка завантаження символів:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchSymbols();
+  }, []);
 
   useEffect(() => {
+    if (!selectedPair) return;
+
     // Підключення до веб-сокет сервера
     const newSocket = io('http://localhost:3000', {
       withCredentials: true,
@@ -28,12 +58,11 @@ const Info = () => {
     // Встановлення з'єднання
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket');
-      // Підписка на оновлення цін для конкретної пари
-      newSocket.emit('subscribePair', PAIR);
+      newSocket.emit('subscribePair', selectedPair);
     });
 
     // Отримання оновлень цін
-    newSocket.on(`pairUpdate:${PAIR}`, (data: PriceData) => {
+    newSocket.on(`pairUpdate:${selectedPair}`, (data: PriceData) => {
       console.log('Received price update:', data);
       setPriceData(data);
     });
@@ -45,19 +74,40 @@ const Info = () => {
 
     setSocket(newSocket);
 
-    // Очищення при розмонтуванні компонента
+    // Очищення при розмонтуванні компонента або зміні пари
     return () => {
       if (newSocket) {
-        newSocket.emit('unsubscribePair', PAIR);
+        newSocket.emit('unsubscribePair', selectedPair);
         newSocket.disconnect();
       }
     };
-  }, []);
+  }, [selectedPair]);
+
+  const handlePairChange = (value: string) => {
+    setSelectedPair(value);
+  };
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Ціни Bybit</h2>
-      {priceData ? (
+      
+      <div className="mb-4">
+        <Select
+          loading={loading}
+          style={{ width: 200 }}
+          value={selectedPair}
+          onChange={handlePairChange}
+          options={symbols.map((symbol) => ({
+            value: symbol.symbol,
+            label: `${symbol.baseCoin}/${symbol.quoteCoin}`,
+          }))}
+          placeholder="Оберіть торгову пару"
+        />
+      </div>
+
+      {loading ? (
+        <Spin />
+      ) : priceData ? (
         <div className="bg-white p-4 rounded shadow">
           <p>Пара: {priceData.pair}</p>
           <p>Час оновлення: {new Date(priceData.timestamp).toLocaleString()}</p>
