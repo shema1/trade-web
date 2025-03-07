@@ -116,6 +116,9 @@ export interface OpenInterestItem {
 export interface OpenInterestResponse {
   symbol: string;
   list: OpenInterestItem[];
+  interval: string;
+  retCode?: number;
+  retMsg?: string;
 }
 
 // Інтерфейс для даних свічок

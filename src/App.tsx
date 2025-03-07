@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { HomeOutlined, LineChartOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
-import React from 'react';
 
 const { Header, Content, Footer, Sider } = Layout;
 
