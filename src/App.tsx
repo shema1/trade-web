@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { HomeOutlined, LineChartOutlined } from '@ant-design/icons';
+import { HomeOutlined, LineChartOutlined, TableOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -23,6 +23,12 @@ function App() {
       icon: <LineChartOutlined />,
       label: 'Аналіз',
       onClick: () => navigate('/info'),
+    },
+    {
+      key: '/symbols',
+      icon: <TableOutlined />,
+      label: 'Фючерсні пари',
+      onClick: () => navigate('/symbols'),
     },
   ];
 
