@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Select, Spin } from 'antd';
-import axios from 'axios';
+import { useGetFuturesSymbolsQuery } from '../store/api/bybit/bybitApi';
 
 interface PriceData {
   pair: string;
@@ -25,26 +25,10 @@ interface Symbol {
 const Info = () => {
   const [socket, setSocket] = useState<any>(null);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
-  const [symbols, setSymbols] = useState<Symbol[]>([]);
   const [selectedPair, setSelectedPair] = useState<string>('BTCUSDT');
-  const [loading, setLoading] = useState<boolean>(true);
-
-  // Завантаження списку символів
-  useEffect(() => {
-    const fetchSymbols = async () => {
-      try {
-        const response = await axios.get<Symbol[]>('http://localhost:3000/bybit/futures/symbols');
-        console.log(response.data);
-        setSymbols(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Помилка завантаження символів:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchSymbols();
-  }, []);
+  
+  // Використовуємо RTK Query замість axios
+  const { data: symbols, isLoading } = useGetFuturesSymbolsQuery();
 
   useEffect(() => {
     if (!selectedPair) return;
@@ -93,11 +77,11 @@ const Info = () => {
       
       <div className="mb-4">
         <Select
-          loading={loading}
+          loading={isLoading}
           style={{ width: 200 }}
           value={selectedPair}
           onChange={handlePairChange}
-          options={symbols.map((symbol) => ({
+          options={symbols?.map((symbol) => ({
             value: symbol.symbol,
             label: `${symbol.baseCoin}/${symbol.quoteCoin}`,
           }))}
@@ -105,7 +89,7 @@ const Info = () => {
         />
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <Spin />
       ) : priceData ? (
         <div className="bg-white p-4 rounded shadow">
