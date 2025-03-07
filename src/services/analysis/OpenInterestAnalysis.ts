@@ -1,4 +1,4 @@
-import { OpenInterestResponse, DetailedTickerResponse, KlineResponse } from '../../store/api/bybit/Interfeces';
+import { OpenInterestResponse, DetailedTickerResponse, KlineResponse, OpenInterestIntervalV5 } from '../../store/api/bybit/Interfeces';
 
 export interface OpenInterestAnalysisResult {
   bullishProbability: number;    // Шанс росту ціни (0-100%)
@@ -139,5 +139,15 @@ export class OpenInterestAnalysis {
         endTime
       }
     };
+  }
+
+  // Додаємо мапінг часу прогнозу до інтервалу Open Interest
+  public static getForecastInterval(minutes: number): OpenInterestIntervalV5 {
+    if (minutes <= 5) return '5min';
+    if (minutes <= 15) return '15min';
+    if (minutes <= 30) return '30min';
+    if (minutes <= 60) return '1h';
+    if (minutes <= 240) return '4h';
+    return '1d';
   }
 } 

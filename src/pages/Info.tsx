@@ -32,19 +32,22 @@ const Info = () => {
   const [socket, setSocket] = useState<any>(null);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
   const [selectedPair, setSelectedPair] = useState<string>('BTCUSDT');
+  const [forecastMinutes, setForecastMinutes] = useState<number>(5);
   
   // Запити для аналізу
   const { data: symbols, isLoading: isLoadingSymbols } = useGetFuturesSymbolsQuery();
   const { data: openInterest, isLoading: isLoadingOI } = useGetOpenInterestQuery({
     symbol: selectedPair,
-    intervalTime: '5min'
+    intervalTime: OpenInterestAnalysis.getForecastInterval(forecastMinutes)
   });
   const { data: ticker, isLoading: isLoadingTicker } = useGetTickersQuery({
     symbol: selectedPair
   });
   const { data: klineData, isLoading: isLoadingKline } = useGetKlineDataQuery({
     symbol: selectedPair,
-    interval: '1',
+    interval: forecastMinutes <= 5 ? '1' : 
+             forecastMinutes <= 15 ? '5' :
+             forecastMinutes <= 30 ? '15' : '30',
     limit: 100
   });
 
@@ -89,6 +92,15 @@ const Info = () => {
     setSelectedPair(value);
   };
 
+  // Додаємо селектор для вибору часу прогнозу
+  const forecastOptions = [
+    { value: 1, label: '1 хвилина' },
+    { value: 5, label: '5 хвилин' },
+    { value: 15, label: '15 хвилин' },
+    { value: 30, label: '30 хвилин' },
+    { value: 60, label: '1 година' }
+  ];
+
   // Отримання аналізу
   const getAnalysis = () => {
     if (!openInterest || !ticker || !klineData || 
@@ -96,7 +108,12 @@ const Info = () => {
       return null;
     }
 
-    return OpenInterestAnalysis.analyze(openInterest, ticker, klineData, 1);
+    return OpenInterestAnalysis.analyze(
+      openInterest, 
+      ticker, 
+      klineData, 
+      forecastMinutes
+    );
   };
 
   const analysis = getAnalysis();
@@ -105,7 +122,7 @@ const Info = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Аналіз Bybit</h2>
       
-      <div className="mb-4">
+      <div className="mb-4 flex gap-4">
         <Select
           loading={isLoadingSymbols}
           style={{ width: 200 }}
@@ -116,6 +133,14 @@ const Info = () => {
             label: `${symbol.baseCoin}/${symbol.quoteCoin}`,
           }))}
           placeholder="Оберіть торгову пару"
+        />
+
+        <Select
+          style={{ width: 200 }}
+          value={forecastMinutes}
+          onChange={(value) => setForecastMinutes(value)}
+          options={forecastOptions}
+          placeholder="Оберіть час прогнозу"
         />
       </div>
 
