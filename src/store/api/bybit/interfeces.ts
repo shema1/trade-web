@@ -108,22 +108,14 @@ export interface DetailedTickerResponse {
   lowPrice24h: string;
 }
 
-export interface OpenInterestResponse {
-  symbol: string;
+export interface OpenInterestItem {
   timestamp: number;
   openInterest: string;
 }
 
-// Додаткові інтерфейси для параметрів запитів
-export interface KlineParams {
+export interface OpenInterestResponse {
   symbol: string;
-  interval: string;
-  limit?: number;
-}
-
-export interface OrderBookParams {
-  symbol: string;
-  limit?: number;
+  list: OpenInterestItem[];
 }
 
 // Інтерфейс для даних свічок
@@ -188,4 +180,6 @@ export interface OpenInterestQueryParams {
   symbol: string;
   /** Інтервал часу (default: '5min') */
   intervalTime?: OpenInterestIntervalV5;
+  /** Кількість записів (default: 50) */
+  limit?: number;
 }
