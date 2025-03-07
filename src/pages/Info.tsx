@@ -65,16 +65,24 @@ const Info = () => {
   useEffect(() => {
     if (!selectedPair) return;
 
-    // Підключення до веб-сокет сервера
+    // Оновлене підключення до веб-сокета
     const newSocket = io('http://localhost:3000', {
       withCredentials: true,
-      transports: ['websocket', 'polling']
+      transports: ['websocket'],
+      path: '/socket.io/',
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      autoConnect: true
     });
 
-    // Встановлення з'єднання
+    // Додаємо обробники подій
     newSocket.on('connect', () => {
-      console.log('Connected to WebSocket');
+      console.log('Connected to WebSocket server');
       newSocket.emit('subscribePair', selectedPair);
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
     });
 
     // Отримання оновлень цін
@@ -83,17 +91,10 @@ const Info = () => {
       setPriceData(data);
     });
 
-    // Обробка помилок
-    newSocket.on('error', (error: any) => {
-      console.error('WebSocket error:', error);
-    });
-
     setSocket(newSocket);
 
-    // Очищення при розмонтуванні компонента або зміні пари
     return () => {
       if (newSocket) {
-        newSocket.emit('unsubscribePair', selectedPair);
         newSocket.disconnect();
       }
     };
