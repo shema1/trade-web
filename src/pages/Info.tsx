@@ -58,6 +58,11 @@ const Info = () => {
   });
 
   useEffect(() => {
+    if (symbols) return;
+    console.log('symbols', symbols);
+  }, [symbols]);
+
+  useEffect(() => {
     if (!selectedPair) return;
 
     // Підключення до веб-сокет сервера
@@ -165,7 +170,7 @@ const Info = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Додаємо нову картку з аналізом ордербуку */}
-        <Card title="Аналіз Ордербуку" className="mb-4">
+        {/* <Card title="Аналіз Ордербуку" className="mb-4">
           {isLoadingOrderBook ? (
             <Spin />
           ) : orderBookAnalysis ? (
@@ -205,10 +210,10 @@ const Info = () => {
           ) : (
             <p>Помилка отримання даних</p>
           )}
-        </Card>
+        </Card> */}
 
         {/* Існуюча картка з аналізом Open Interest */}
-        <Card title="Аналіз Open Interest" className="mb-4">
+        {/* <Card title="Аналіз Open Interest" className="mb-4">
           {isLoadingOI || isLoadingTicker || isLoadingKline ? (
             <Spin />
           ) : analysis ? (
@@ -236,7 +241,7 @@ const Info = () => {
           ) : (
             <p>Помилка отримання даних</p>
           )}
-        </Card>
+        </Card> */}
 
         {/* Існуюча картка з ордербуком */}
         <Card title="Ордербук (Реальний час)" className="mb-4">
