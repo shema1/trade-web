@@ -5,9 +5,11 @@ import {
   useGetFuturesSymbolsQuery, 
   useGetOpenInterestQuery,
   useGetTickersQuery,
-  useGetKlineDataQuery
+  useGetKlineDataQuery,
+  useGetOrderBookQuery
 } from '../store/api/bybit/bybitApi';
 import { OpenInterestAnalysis } from '../services/analysis/OpenInterestAnalysis';
+import { OrderBookAnalysis } from '../services/analysis/OrderBookAnalysis';
 
 interface PriceData {
   pair: string;
@@ -49,6 +51,10 @@ const Info = () => {
              forecastMinutes <= 15 ? '5' :
              forecastMinutes <= 30 ? '15' : '30',
     limit: 100
+  });
+  const { data: orderBook, isLoading: isLoadingOrderBook } = useGetOrderBookQuery({
+    symbol: selectedPair,
+    limit: 50
   });
 
   useEffect(() => {
@@ -101,6 +107,19 @@ const Info = () => {
     { value: 60, label: '1 година' }
   ];
 
+  // Створюємо екземпляр аналізатора
+  const orderBookAnalyzer = new OrderBookAnalysis();
+
+  // Отримання аналізу ордербуку
+  const getOrderBookAnalysis = () => {
+    if (!orderBook || isLoadingOrderBook) {
+      return null;
+    }
+    return orderBookAnalyzer.analyzeOrderBook(orderBook);
+  };
+
+  const orderBookAnalysis = getOrderBookAnalysis();
+
   // Отримання аналізу
   const getAnalysis = () => {
     if (!openInterest || !ticker || !klineData || 
@@ -145,7 +164,50 @@ const Info = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Картка з аналізом Open Interest */}
+        {/* Додаємо нову картку з аналізом ордербуку */}
+        <Card title="Аналіз Ордербуку" className="mb-4">
+          {isLoadingOrderBook ? (
+            <Spin />
+          ) : orderBookAnalysis ? (
+            <div>
+              <div className="flex justify-between mb-2">
+                <span>Ймовірність росту:</span>
+                <span className={orderBookAnalysis.bullishProbability > 50 ? 'text-green-600' : 'text-gray-600'}>
+                  {orderBookAnalysis.bullishProbability}%
+                </span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>Ймовірність падіння:</span>
+                <span className={orderBookAnalysis.bearishProbability > 50 ? 'text-red-600' : 'text-gray-600'}>
+                  {orderBookAnalysis.bearishProbability}%
+                </span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>Співвідношення об'ємів (Buy/Sell):</span>
+                <span className={orderBookAnalysis.volumeRatio > 1 ? 'text-green-600' : 'text-red-600'}>
+                  {orderBookAnalysis.volumeRatio}
+                </span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>Домінуюча сторона:</span>
+                <span className={
+                  orderBookAnalysis.dominantSide === 'bull' ? 'text-green-600' : 
+                  orderBookAnalysis.dominantSide === 'bear' ? 'text-red-600' : 'text-gray-600'
+                }>
+                  {orderBookAnalysis.dominantSide === 'bull' ? 'Покупці' : 
+                   orderBookAnalysis.dominantSide === 'bear' ? 'Продавці' : 'Нейтрально'}
+                </span>
+              </div>
+              <div className="mt-2 p-2 bg-gray-50 rounded">
+                <p className="text-sm">{orderBookAnalysis.analysis}</p>
+              </div>
+            </div>
+          ) : (
+            <p>Помилка отримання даних</p>
+          )}
+        </Card>
+
+        {/* Існуюча картка з аналізом Open Interest */}
         <Card title="Аналіз Open Interest" className="mb-4">
           {isLoadingOI || isLoadingTicker || isLoadingKline ? (
             <Spin />
@@ -177,7 +239,7 @@ const Info = () => {
         </Card>
 
         {/* Існуюча картка з ордербуком */}
-        <Card title="Ордербук" className="mb-4">
+        <Card title="Ордербук (Реальний час)" className="mb-4">
           {isLoadingSymbols ? (
             <Spin />
           ) : priceData ? (
