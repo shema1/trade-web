@@ -36,6 +36,12 @@ function App() {
       label: 'Рекомендації для торгівлі',
       onClick: () => navigate('/trade-recommendation'),
     },
+    {
+      key: '/tasks',
+      icon: <TableOutlined />,
+      label: 'Завдання',
+      onClick: () => navigate('/tasks'),
+    },
   ];
 
   return (
