@@ -56,6 +56,7 @@ export const {
   useStartTradingMutation,
   useStopTradingMutation,
   useGetTradingStatusQuery,
+  useLazyGetAllTasksQuery,
   useGetAllTasksQuery,
   useGetTradingResultQuery,
 } = tradingApi;

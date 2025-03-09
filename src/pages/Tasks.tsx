@@ -1,18 +1,35 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { useGetAllTasksQuery, useStartTradingMutation, useStopTradingMutation } from '../store/api/trading/tradingApi';
-import { TradingTask } from '../store/api/trading/tradingInterface';
+import { useGetAllTasksQuery, useLazyGetAllTasksQuery, useStartTradingMutation, useStopTradingMutation } from '../store/api/trading/tradingApi';
+import { TradingTask, StartTradingRequest } from '../store/api/trading/tradingInterface';
+import CreateTaskModal from '../components/CreateTaskModal';
 
 const Tasks = () => {
-    const { data: tasks, isLoading } = useGetAllTasksQuery();
-    const [startTrading] = useStartTradingMutation();
-    const [stopTrading] = useStopTradingMutation();
+    const [getAllTasks, { data: tasks, isLoading }] = useLazyGetAllTasksQuery();
 
+
+    const [startTrading, { isLoading: isStarting }] = useStartTradingMutation();
+    const [stopTrading] = useStopTradingMutation();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         console.log(tasks);
     }, [tasks]);
+
+
+    useEffect(() => {
+        getAllTasks();
+    }, []);
+
+    const handleCreateTask = async (values: StartTradingRequest) => {
+        try {
+            await startTrading(values).unwrap();
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        }
+    };
 
     const columns: TableProps<TradingTask>['columns'] = [
         // {
@@ -46,7 +63,7 @@ const Tasks = () => {
             title: 'Завершено',
             dataIndex: 'completedAt',
             key: 'completedAt',
-            render: (value) => new Date(value).toLocaleString('uk-UA'),
+            render: (value) => value ? new Date(value).toLocaleString('uk-UA') : '-',
         },
         {
             title: 'Ітерацій',
@@ -57,6 +74,11 @@ const Tasks = () => {
             title: 'Позицій',
             dataIndex: 'findOrders',
             key: 'findOrders',
+        },
+        {
+            title: 'проаналізовано',
+            dataIndex: 'symbolsAnalyzed',
+            key: 'symbolsAnalyzed',
         },
         {
             title: 'Params',
@@ -102,12 +124,28 @@ const Tasks = () => {
 
     return (
         <div>
-            <h1>Торгові завдання</h1>
+            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1>Торгові завдання</h1>
+                <Button 
+                    type="primary" 
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    Створити нове завдання
+                </Button>
+            </div>
+
             <Table<TradingTask>
                 dataSource={tasks || []}
                 columns={columns}
                 rowKey="_id"
                 loading={isLoading}
+            />
+
+            <CreateTaskModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateTask}
+                isLoading={isStarting}
             />
         </div>
     );
