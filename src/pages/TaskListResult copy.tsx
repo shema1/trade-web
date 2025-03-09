@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useGetTradingResultQuery, useGetTradeSimulationListQuery } from '../store/api/trading/tradingApi';
+import {  useGetTradeSimulationListQuery } from '../store/api/trading/tradingApi';
 import { Card, Table, Tabs, Statistic, Row, Col, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { TradeResult } from '../store/api/trading/tradingInterface';

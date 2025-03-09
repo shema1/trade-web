@@ -1,14 +1,15 @@
 import { useParams } from 'react-router-dom';
 import { useGetTradeSimulationListQuery } from '../store/api/trading/tradingApi';
-import { Card, Table, Statistic, Row, Col, Tag } from 'antd';
+import { Card, Table, Statistic, Row, Col, Tag, Button } from 'antd';
 import type { TableProps } from 'antd';
 import { TradeResult, TradingTaskResult } from '../store/api/trading/tradingInterface';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import SimulationModal from '../components/SimulationModal';
 
 const TaskListResult = () => {
     const { taskId } = useParams();
     const { data: simulations, isLoading: isSimulationsLoading } = useGetTradeSimulationListQuery(taskId || '');
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         console.log(simulations);
@@ -94,7 +95,22 @@ const TaskListResult = () => {
                 return <Statistic title="Втрати" value={record.result.lost.toFixed(2)} valueStyle={{ color: '#cf1322' }} />
             },
         },
-        
+        {
+            title: '',
+            dataIndex: 'stopLossPercent',
+            key: 'stopLossPercent',
+            render: (_, record) => {
+                return record.simulationParams ? <Statistic title="Стоп-лосс" value={record.simulationParams.stopLoss}  valueStyle={{ color: '#cf1322' }}/> : ''
+            },
+        },
+        {
+            title: '',
+            dataIndex: 'takeProfitPercent',
+            key: 'takeProfitPercent',
+            render: (_, record) => {
+                return record.simulationParams ? <Statistic title="Тейк-профіт" value={record.simulationParams.takeProfit}  valueStyle={{ color: '#3f8600' }}/> : ''
+            },
+        },
         
 
         // {
@@ -148,51 +164,27 @@ const TaskListResult = () => {
 
     return (
         <div>
+            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1>Результати симуляцій</h1>
+                <Button 
+                    type="primary" 
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    Перевірити профіт
+                </Button>
+            </div>
+
             <Table
                 columns={tradeColumns}
                 dataSource={simulations}
                 rowKey={(record) => record._id as string} 
             />
-            {/* <h1>Результати завдання: {taskId}</h1>
-            {simulations?.map((simulation) => (
-                <Card key={simulation._id} style={{ marginBottom: 16 }}>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Statistic 
-                                title="Успішність" 
-                                value={simulation.result.successRate} 
-                                suffix="%" 
-                            />
-                        </Col>
-                        <Col span={6}>
-                            <Statistic 
-                                title="Всього угод" 
-                                value={simulation.result.total} 
-                            />
-                        </Col>
-                        <Col span={6}>
-                            <Statistic 
-                                title="Прибуткових" 
-                                value={simulation.result.profitable}
-                                valueStyle={{ color: '#3f8600' }}
-                            />
-                        </Col>
-                        <Col span={6}>
-                            <Statistic 
-                                title="Збиткових" 
-                                value={simulation.result.unprofitable}
-                                valueStyle={{ color: '#cf1322' }}
-                            />
-                        </Col>
-                    </Row>
 
-                    <Table
-                        columns={tradeColumns}
-                        dataSource={[...simulation.result.profitableDetails, ...simulation.result.unprofitableDetails ]                       }
-                        rowKey={(record) => `${record.symbol}-${record.timestamp}`}
-                    />
-                </Card>
-            ))} */}
+            <SimulationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                taskId={taskId || ''}
+            />
         </div>
     );
 };
