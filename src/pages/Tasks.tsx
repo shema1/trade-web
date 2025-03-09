@@ -4,8 +4,10 @@ import type { TableProps } from 'antd';
 import { useGetAllTasksQuery, useLazyGetAllTasksQuery, useStartTradingMutation, useStopTradingMutation } from '../store/api/trading/tradingApi';
 import { TradingTask, StartTradingRequest } from '../store/api/trading/tradingInterface';
 import CreateTaskModal from '../components/CreateTaskModal';
+import { useNavigate } from 'react-router-dom';
 
 const Tasks = () => {
+    const navigate = useNavigate();
     const [getAllTasks, { data: tasks, isLoading }] = useLazyGetAllTasksQuery();
 
 
@@ -31,12 +33,16 @@ const Tasks = () => {
         }
     };
 
+    const handleRowClick = (record: TradingTask) => {
+        navigate(`/task-result/${record.taskId}`);
+    };
+
     const columns: TableProps<TradingTask>['columns'] = [
-        // {
-        //     title: 'ID',
-        //     dataIndex: 'taskId',
-        //     key: 'taskId',
-        // },
+        {
+            title: 'ID',
+            dataIndex: 'taskId',
+            key: 'taskId',
+        },
         // {
         //     title: 'Символ',
         //     dataIndex: 'symbol',
@@ -47,7 +53,7 @@ const Tasks = () => {
             dataIndex: 'status',
             key: 'status',
             render: (status: string) => (
-                <Tag color={status === 'active' ? 'green' : status === 'completed' ? 'blue' : 'red'}>
+                <Tag color={status === 'ACTIVE' ? 'green' : status === 'COMPLETED' ? 'blue' : 'red'}>
                     {status.toUpperCase()}
                 </Tag>
             ),
@@ -97,6 +103,12 @@ const Tasks = () => {
             render: (_, a) => a.params?.timeframe,
         },
         {
+            title: 'період',
+            dataIndex: 'klinePeriod', 
+            key: 'klinePeriod',
+            render: (_, a) => a.params?.klinePeriod
+        },
+        {
             title: 'Дії',
             key: 'actions',
             render: (_, record) => (
@@ -139,6 +151,10 @@ const Tasks = () => {
                 columns={columns}
                 rowKey="_id"
                 loading={isLoading}
+                onRow={(record) => ({
+                    onClick: () => handleRowClick(record),
+                    style: { cursor: 'pointer' }
+                })}
             />
 
             <CreateTaskModal

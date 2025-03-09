@@ -3,13 +3,14 @@ import {
   TradingTask,
   StartTradingRequest,
   TradingTaskResult,
-  TradingTaskResultRequest,
+  TradingTaskSimulationRequest,
 } from './tradingInterface';
 
 // API для роботи з торгівлею
 export const tradingApi = createApi({
   reducerPath: 'tradingApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/trading' }),
+  tagTypes: ['Tasks', 'Simulations'],
   endpoints: (builder) => ({
     // Запуск торгівлі
     startTrading: builder.mutation<TradingTask, StartTradingRequest>({
@@ -18,6 +19,7 @@ export const tradingApi = createApi({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Tasks'],
     }),
 
     // Зупинка торгівлі
@@ -26,27 +28,40 @@ export const tradingApi = createApi({
         url: `/${taskId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Tasks'],
     }),
 
     // Отримання статусу торгівлі
     getTradingStatus: builder.query<TradingTask, string>({
       query: (taskId) => `/${taskId}`,
+      providesTags: ['Tasks'],
     }),
 
     // Отримання всіх торгових завдань
     getAllTasks: builder.query<TradingTask[], void>({
       query: () => '/',
+      providesTags: ['Tasks'],
     }),
 
-    // Отримання результатів торгівлі
-    getTradingResult: builder.query<
-      TradingTaskResult,
-      TradingTaskResultRequest
-    >({
+    // Симуляція торгівлі
+    getTradingResult: builder.query<TradingTaskResult, TradingTaskSimulationRequest>({
       query: ({ taskId, ...params }) => ({
-        url: `/${taskId}/result`,
+        url: `/${taskId}/simulation`,
         params,
       }),
+      providesTags: ['Simulations'],
+    }),
+
+    // Отримання списку симуляцій для завдання
+    getTradeSimulationList: builder.query<TradingTaskResult[], string>({
+      query: (taskId) => `/${taskId}/simulations`,
+      providesTags: ['Simulations'],
+    }),
+
+    // Отримання конкретної симуляції за ID
+    getTradeSimulationById: builder.query<TradingTaskResult, string>({
+      query: (id) => `/simulation/${id}`,
+      providesTags: ['Simulations'],
     }),
   }),
 });
@@ -59,4 +74,6 @@ export const {
   useLazyGetAllTasksQuery,
   useGetAllTasksQuery,
   useGetTradingResultQuery,
+  useGetTradeSimulationListQuery,
+  useGetTradeSimulationByIdQuery,
 } = tradingApi;

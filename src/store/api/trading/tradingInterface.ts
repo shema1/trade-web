@@ -82,13 +82,43 @@ export interface TradingStatistics {
   maxConsecutiveWins?: number;
 }
 
-// Результат торгового завдання (відповідає TradingTaskResult schema)
+// Запит на симуляцію торгівлі
+export interface TradingTaskSimulationRequest {
+  taskId: string;
+  takeProfit: number;
+  stopLoss: number;
+  interval: KlineIntervalV3;
+  betSize?: number;
+}
+
+// Деталі прибуткової угоди
+export interface ProfitableDetail {
+  symbol: string;
+  entryPrice: number;
+  profitPrice: number;
+  lossPrice: number;
+  entryTime: string;
+  executionTime: string;
+  recommendation: 'LONG' | 'SHORT';
+}
+
+// Розширюємо TradingTaskResult
 export interface TradingTaskResult {
-  _id?: string; // MongoDB ID
+  _id?: string;
   taskId: string;
   result: {
     trades: TradeResult[];
     statistics: TradingStatistics;
+    total: number;
+    profitable: number;
+    unprofitable: number;
+    openPositionsCount: number;
+    successRate: number;
+    profit: number;
+    lost: number;
+    profitableSymbols: string[];
+    unprofitableSymbols: string[];
+    profitableDetails?: ProfitableDetail[];
     params: {
       takeProfit: number;
       stopLoss: number;

@@ -12,14 +12,14 @@ const TradeRecommendation = () => {
   const { data: symbols, isLoading: isSymbolsLoading } = useGetFuturesSymbolsQuery();
 
 
-  useEffect(() => {
-    console.log(symbols);
-    if(symbols && symbols?.length > 0){
-        const symbolsArray = symbols.map((symbol) => symbol.symbol);
-        console.log("symbolsArray", symbolsArray)
-        // startAnalyzing({ symbols: symbolsArray });
-    }
-  }, [symbols]);
+//   useEffect(() => {
+//     console.log(symbols);
+//     if(symbols && symbols?.length > 0){
+//         const symbolsArray = symbols.map((symbol) => symbol.symbol);
+//         console.log("symbolsArray", symbolsArray)
+//         startAnalyzing({ symbols: symbolsArray });
+//     }
+//   }, [symbols]);
   
   const columns: TableProps<CreateRecommendationDto>['columns'] = [
     {

@@ -5,7 +5,7 @@ import Info from '../pages/Info';
 import Symbols from '../pages/Symbols';
 import TradeRecommendation from '../pages/TradeReacomendation';
 import Tasks from '../pages/Tasks';
-
+import TaskListResult from '../pages/TaskListResult';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -36,5 +36,10 @@ export const router = createBrowserRouter([
     //     element: <About />,
     //   },
     ],
+
+  },
+  {
+    path: '/task-result/:taskId',
+    element: <TaskListResult />,
   },
 ]); 
