@@ -1,14 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import {   FuturesSymbolResponse,
-    FuturesTickerResponse,
-    KlineQueryParams,
-    KlineResponse,
-    OrderBookQueryParams,
-    OrderBookResponse,
-    DetailedTickerResponse,
-    OpenInterestResponse,
-    TickerQueryParams,
-    OpenInterestQueryParams, } from './Interfeces';
+import {  FuturesSymbolResponse,
+  FuturesTickerResponse,
+  KlineQueryParams,
+  KlineResponse,
+  OrderBookQueryParams,
+  OrderBookResponse,
+  DetailedTickerResponse,
+  OpenInterestResponse,
+  TickerQueryParams,
+  OpenInterestQueryParams } from './interfeces';
+
 
 
 export const bybitApi = createApi({

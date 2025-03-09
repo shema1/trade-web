@@ -30,6 +30,12 @@ function App() {
       label: 'Фючерсні пари',
       onClick: () => navigate('/symbols'),
     },
+    {
+      key: '/trade-recommendation',
+      icon: <TableOutlined />,
+      label: 'Рекомендації для торгівлі',
+      onClick: () => navigate('/trade-recommendation'),
+    },
   ];
 
   return (

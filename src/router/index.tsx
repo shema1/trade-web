@@ -3,6 +3,7 @@ import App from '../App';
 import Home from '../pages/Home';
 import Info from '../pages/Info';
 import Symbols from '../pages/Symbols';
+import TradeRecommendation from '../pages/TradeReacomendation';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
       {
         path: '/symbols',
         element: <Symbols />,
+      },
+      {
+        path: '/trade-recommendation',
+        element: <TradeRecommendation />,
       },
     //   {
     //     path: '/about',

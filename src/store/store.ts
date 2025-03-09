@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { api } from './api';
 import { bybitApi } from './api/bybit/bybitApi';
+import { tradeRecommendationApi } from './api/tradeRecommendation/tradeRecommendationApi';
 
 export const store = configureStore({
   reducer: {
-    [api.reducerPath]: api.reducer,
     [bybitApi.reducerPath]: bybitApi.reducer,
+    [tradeRecommendationApi.reducerPath]: tradeRecommendationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware, bybitApi.middleware),
+    getDefaultMiddleware().concat( bybitApi.middleware, tradeRecommendationApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
