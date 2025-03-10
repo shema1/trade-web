@@ -13,9 +13,9 @@ export const tradingApi = createApi({
   tagTypes: ['Tasks', 'Simulations'],
   endpoints: (builder) => ({
     // Запуск торгівлі
-    startTrading: builder.mutation<TradingTask, StartTradingRequest>({
+    startAnalysis: builder.mutation<TradingTask, StartTradingRequest>({
       query: (body) => ({
-        url: '/start',
+        url: '/start-analysis',
         method: 'POST',
         body,
       }),
@@ -23,18 +23,12 @@ export const tradingApi = createApi({
     }),
 
     // Зупинка торгівлі
-    stopTrading: builder.mutation<void, string>({
+    stopAnalysis: builder.mutation<void, string>({
       query: (taskId) => ({
         url: `/${taskId}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Tasks'],
-    }),
-
-    // Отримання статусу торгівлі
-    getTradingStatus: builder.query<TradingTask, string>({
-      query: (taskId) => `/${taskId}`,
-      providesTags: ['Tasks'],
     }),
 
     // Отримання всіх торгових завдань
@@ -46,7 +40,7 @@ export const tradingApi = createApi({
     // Симуляція торгівлі
     tradingSimulation: builder.mutation<TradingTaskResult, TradingTaskSimulationRequest>({
       query: ({ taskId, ...params }) => ({
-        url: `/${taskId}/tradeSimulation`,
+        url: `/${taskId}/check-profit`,
         method: 'POST',
         body: params,
       }),
@@ -55,7 +49,7 @@ export const tradingApi = createApi({
 
     // Отримання списку симуляцій для завдання
     getTradeSimulationList: builder.query<TradingTaskResult[], string>({
-      query: (taskId) => `/${taskId}/simulations`,
+      query: (taskId) => `/${taskId}/profitlist`,
       providesTags: ['Simulations'],
     }),
 
@@ -69,9 +63,8 @@ export const tradingApi = createApi({
 
 // Експорт хуків для використання в компонентах
 export const {
-  useStartTradingMutation,
-  useStopTradingMutation,
-  useGetTradingStatusQuery,
+  useStartAnalysisMutation,
+  useStopAnalysisMutation,
   useLazyGetAllTasksQuery,
   useGetAllTasksQuery,
   useTradingSimulationMutation,

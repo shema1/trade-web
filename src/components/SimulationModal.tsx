@@ -34,7 +34,7 @@ const SimulationModal: React.FC<SimulationModalProps> = ({
     const handleSubmit = async () => {
         try {
             const values = await form.validateFields();
-            await createSimulation({
+             createSimulation({
                 taskId,
                 ...values,
             }).unwrap();
@@ -61,7 +61,7 @@ const SimulationModal: React.FC<SimulationModalProps> = ({
                 initialValues={{
                     takeProfit: 1,
                     stopLoss: 0.5,
-                    betSize: 100,
+                    betSize: 5,
                     interval: '1',
                 }}
             >

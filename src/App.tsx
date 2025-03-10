@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { HomeOutlined, LineChartOutlined, TableOutlined } from '@ant-design/icons';
+import { HomeOutlined, TableOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -15,14 +15,8 @@ function App() {
     {
       key: '/',
       icon: <HomeOutlined />,
-      label: 'Головна',
+      label: 'Таски',
       onClick: () => navigate('/'),
-    },
-    {
-      key: '/info',
-      icon: <LineChartOutlined />,
-      label: 'Аналіз',
-      onClick: () => navigate('/info'),
     },
     {
       key: '/symbols',
@@ -30,18 +24,25 @@ function App() {
       label: 'Фючерсні пари',
       onClick: () => navigate('/symbols'),
     },
-    {
-      key: '/trade-recommendation',
-      icon: <TableOutlined />,
-      label: 'Рекомендації для торгівлі',
-      onClick: () => navigate('/trade-recommendation'),
-    },
-    {
-      key: '/tasks',
-      icon: <TableOutlined />,
-      label: 'Завдання',
-      onClick: () => navigate('/tasks'),
-    },
+    // {
+    //   key: '/info',
+    //   icon: <LineChartOutlined />,
+    //   label: 'Аналіз',
+    //   onClick: () => navigate('/info'),
+    // },
+
+    // {
+    //   key: '/trade-recommendation',
+    //   icon: <TableOutlined />,
+    //   label: 'Рекомендації для торгівлі',
+    //   onClick: () => navigate('/trade-recommendation'),
+    // },
+    // {
+    //   key: '/tasks',
+    //   icon: <TableOutlined />,
+    //   label: 'Завдання',
+    //   onClick: () => navigate('/tasks'),
+    // },
   ];
 
   return (

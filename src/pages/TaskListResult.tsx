@@ -5,6 +5,7 @@ import type { TableProps } from 'antd';
 import { TradeResult, TradingTaskResult } from '../store/api/trading/tradingInterface';
 import { useEffect, useState } from 'react';
 import SimulationModal from '../components/SimulationModal';
+import './TaskListResult.css';
 
 const TaskListResult = () => {
     const { taskId } = useParams();
@@ -25,6 +26,7 @@ const TaskListResult = () => {
             dataIndex: 'successRate',
             key: 'successRate',
             render: (_, record) => {
+              
                 return <Statistic 
                     title="Успішність"  
                     value={record.result.successRate} 
@@ -42,7 +44,7 @@ const TaskListResult = () => {
             render: (_, record) => {
                 return <Statistic 
                     title="Всього угод" 
-                    value={record.result.total}
+                    value={record.result.totalOrdersCount}
                     valueStyle={{ color: '#1677ff' }} // синій колір
                 />
             },
@@ -54,7 +56,7 @@ const TaskListResult = () => {
             render: (_, record) => {
                 return <Statistic 
                     title="Прибуткових" 
-                    value={record.result.profitable}
+                    value={record.result.profitableOrdersCount}
                     valueStyle={{ color: '#3f8600' }} // зелений колір
                 />
             },
@@ -66,7 +68,7 @@ const TaskListResult = () => {
             render: (_, record) => {
                 return <Statistic 
                     title="Збиткових" 
-                    value={record.result.unprofitable}
+                    value={record.result.unprofitableOrdersCount}
                     valueStyle={{ color: '#cf1322' }} // червоний колір
                 />
             },
@@ -84,7 +86,7 @@ const TaskListResult = () => {
             dataIndex: 'profit',
             key: 'profit',
             render: (_, record) => {
-                return <Statistic title="Профіт" value={record.result.profit.toFixed(2)}  valueStyle={{ color: '#3f8600' }}/>
+                return <Statistic title="Профіт" value={record.result.profit.toFixed(2)}  valueStyle={{ color: '#3f8600' }} suffix="$"/>
             },
         },
         {
@@ -92,25 +94,45 @@ const TaskListResult = () => {
             dataIndex: 'lost',
             key: 'lost',
             render: (_, record) => {
-                return <Statistic title="Втрати" value={record.result.lost.toFixed(2)} valueStyle={{ color: '#cf1322' }} />
+                return <Statistic title="Втрати" value={record.result.lost.toFixed(2)} valueStyle={{ color: '#cf1322' }}  suffix="$"/>
             },
         },
         {
-            title: '',
-            dataIndex: 'stopLossPercent',
-            key: 'stopLossPercent',
-            render: (_, record) => {
-                return record.simulationParams ? <Statistic title="Стоп-лосс" value={record.simulationParams.stopLoss}  valueStyle={{ color: '#cf1322' }}/> : ''
-            },
-        },
-        {
-            title: '',
+            title: 'Тейк-профіт',
             dataIndex: 'takeProfitPercent',
             key: 'takeProfitPercent',
             render: (_, record) => {
-                return record.simulationParams ? <Statistic title="Тейк-профіт" value={record.simulationParams.takeProfit}  valueStyle={{ color: '#3f8600' }}/> : ''
+                return record.simulationParams ? <Statistic title="Тейк-профіт" value={record.simulationParams.takeProfit}  valueStyle={{ color: '#3f8600' }} suffix="%" /> : ''
             },
         },
+        {
+            title: 'Стоп-лосс',
+            dataIndex: 'stopLossPercent',
+            key: 'stopLossPercent',
+            render: (_, record) => {
+                return record.simulationParams ? <Statistic title="Стоп-лосс" value={record.simulationParams.stopLoss}  valueStyle={{ color: '#cf1322' }} suffix="%" /> : ''
+            },
+        },
+
+        {
+            title: 'Потенційний прибуток',
+            dataIndex: 'potentialProfit',
+            key: 'potentialProfit',
+            render: (_, record) => {
+                return <Statistic title="Потенційний прибуток" value={record.result.potentialProfitValue.toFixed(2)}  valueStyle={{ color: '#3f8600' }} suffix="$"/>
+            },
+        },
+        {
+            title: 'Потенційний збиток',
+            dataIndex: 'potentialLoss',
+            key: 'potentialLoss',
+            render: (_, record) => {    
+                return <Statistic title="Потенційний збиток" value={record.result.potentialLossValue.toFixed(2)}  valueStyle={{ color: '#cf1322' }} suffix="$"/>
+            },
+        },
+        
+      
+   
         
 
         // {
@@ -177,7 +199,12 @@ const TaskListResult = () => {
             <Table
                 columns={tradeColumns}
                 dataSource={simulations}
-                rowKey={(record) => record._id as string} 
+                rowKey={(record) => record._id as string}
+                rowClassName={(record) => {
+                    if (record.result.profit  >  record.result.lost) return 'table-row-success';
+                    // if (record.result.successRate >= 50) return 'table-row-warning';
+                    return 'table-row-danger';
+                }}
             />
 
             <SimulationModal

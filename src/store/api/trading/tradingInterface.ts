@@ -55,16 +55,16 @@ export interface TradingTaskResultRequest {
 // Результат торгової операції (відповідає структурі з CheckProfitableResponseDto)
 export interface TradeResult {
     symbol: string;
-    side: 'Buy' | 'Sell';
     entryPrice: number;
-    exitPrice: number;
+    profitPrice: number;
+    lossPrice: number;
+    entryTime: string;
+    executionTime: string;
+    recommendation: 'LONG' | 'SHORT';
+    betSize: number;
     profit: number;
-    profitPercent: number;
-    timestamp: Date;
-    exitType: 'takeProfit' | 'stopLoss';
-    position?: number;
-    entryTime?: string;
-    exitTime?: string;
+    lost: number;
+    type: 'OPEN' | 'LOST' | 'PROFIT';
 }
 
 // Загальна статистика результатів (відповідає структурі з CheckProfitableResponseDto)
@@ -107,28 +107,30 @@ export interface TradingTaskResult {
     _id?: string;
     taskId: string;
     result: {
-        trades: TradeResult[];
-        statistics: TradingStatistics;
-        total: number;
-        profitable: number;
-        unprofitable: number;
-        openPositionsCount: number;
+        taskId: string;
+        totalOrdersCount: number;
+        profitableOrdersCount: number;
+        unprofitableOrdersCount: number;
         successRate: number;
-        profit: number;
         lost: number;
+        profit: number;
+        potentialProfitValue: number;
+        potentialLossValue: number;
         profitableSymbols: string[];
         unprofitableSymbols: string[];
-        profitableDetails?: ProfitableDetail[];
-    };
+        profitableDetails: TradeResult[];
+        unprofitableDetails: TradeResult[];
+        openPositionsCount: number;
+        openPositionsSymbols: string[];
+        openPositionsDetails: TradeResult[];
+    },
     simulationParams: {
-
         betSize: number;
-        interval: number;
+        interval: KlineIntervalV3;
         stopLoss: number;
         takeProfit: number;
         taskId: string;
-    },
-    createdAt: Date;
+    }
 }
 
 // Додаткові типи для внутрішнього використання

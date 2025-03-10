@@ -1,0 +1,23 @@
+.table-row-success {
+    background-color: rgba(63, 134, 0, 0.15);
+}
+
+.table-row-success:hover > td {
+    background-color: rgba(63, 134, 0, 0.30) !important;
+}
+
+.table-row-warning {
+    background-color: rgba(250, 219, 20, 0.05);
+}
+
+.table-row-warning:hover > td {
+    background-color: rgba(250, 219, 20, 0.15) !important;
+}
+
+.table-row-danger {
+    background-color: rgba(207, 19, 34, 0.15);
+}
+
+.table-row-danger:hover > td {
+    background-color: rgba(207, 19, 34, 0.30) !important;
+} 

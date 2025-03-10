@@ -1,9 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
-import Home from '../pages/Home';
-import Info from '../pages/Info';
 import Symbols from '../pages/Symbols';
-import TradeRecommendation from '../pages/TradeReacomendation';
 import Tasks from '../pages/Tasks';
 import TaskListResult from '../pages/TaskListResult';
 export const router = createBrowserRouter([
@@ -13,24 +10,24 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Home />,
-      },
-      {
-        path: '/info',
-        element: <Info />,
+        element: <Tasks />,
       },
       {
         path: '/symbols',
         element: <Symbols />,
       },
-      {
-        path: '/trade-recommendation',
-        element: <TradeRecommendation />,
-      },
-      {
-        path: '/tasks',
-        element: <Tasks />,
-      },
+      // {
+      //   path: '/trade-recommendation',
+      //   element: <TradeRecommendation />,
+      // },
+      // {
+      //   path: '/info',
+      //   element: <Info />,
+      // },
+      // {
+      //   path: '/tasks',
+      //   element: <Tasks />,
+      // },
     //   {
     //     path: '/about',
     //     element: <About />,

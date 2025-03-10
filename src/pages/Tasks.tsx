@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { useGetAllTasksQuery, useLazyGetAllTasksQuery, useStartTradingMutation, useStopTradingMutation } from '../store/api/trading/tradingApi';
+import { useLazyGetAllTasksQuery, useStartAnalysisMutation, useStopAnalysisMutation, } from '../store/api/trading/tradingApi';
 import { TradingTask, StartTradingRequest } from '../store/api/trading/tradingInterface';
 import CreateTaskModal from '../components/CreateTaskModal';
 import { useNavigate } from 'react-router-dom';
@@ -11,8 +11,8 @@ const Tasks = () => {
     const [getAllTasks, { data: tasks, isLoading }] = useLazyGetAllTasksQuery();
 
 
-    const [startTrading, { isLoading: isStarting }] = useStartTradingMutation();
-    const [stopTrading] = useStopTradingMutation();
+    const [startTrading, { isLoading: isStarting }] = useStartAnalysisMutation();
+    const [stopTrading] = useStopAnalysisMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
