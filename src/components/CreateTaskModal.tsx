@@ -60,10 +60,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         layout="vertical"
         initialValues={{
           timeframe: '1',
-          klinePeriod: 100,
+          klinePeriod: 1000,
           longProbabilityValue: 60,
           shortProbabilityValue: 60,
-          maxIterations: 100,
+          maxIterations: 1,
         }}
       >
         {/* <Form.Item

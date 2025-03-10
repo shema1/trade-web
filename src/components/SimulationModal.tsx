@@ -1,6 +1,5 @@
-import { Modal, Form, InputNumber, Button } from 'antd';
-import { useLazyTradingSimulationQuery } from '../store/api/trading/tradingApi';
-import { TradingTaskSimulationRequest } from '../store/api/trading/tradingInterface';
+import { Modal, Form, InputNumber, Select } from 'antd';
+import { useTradingSimulationMutation } from '../store/api/trading/tradingApi';
 
 interface SimulationModalProps {
     isOpen: boolean;
@@ -8,116 +7,95 @@ interface SimulationModalProps {
     taskId: string;
 }
 
-const SimulationModal = ({ isOpen, onClose, taskId }: SimulationModalProps) => {
+const SimulationModal: React.FC<SimulationModalProps> = ({
+    isOpen,
+    onClose,
+    taskId,
+}) => {
     const [form] = Form.useForm();
-    const [checkProfit, { data: simulationResult, isLoading }] = useLazyTradingSimulationQuery();
+    const [createSimulation, { isLoading }] = useTradingSimulationMutation();
 
-    const handleSubmit = async (values: TradingTaskSimulationRequest) => {
+    const timeframeOptions = [
+        { label: '1 хвилина', value: '1' },
+        { label: '3 хвилини', value: '3' },
+        { label: '5 хвилин', value: '5' },
+        { label: '15 хвилин', value: '15' },
+        { label: '30 хвилин', value: '30' },
+        { label: '1 година', value: '60' },
+        { label: '2 години', value: '120' },
+        { label: '4 години', value: '240' },
+        { label: '6 годин', value: '360' },
+        { label: '12 годин', value: '720' },
+        { label: '1 день', value: 'D' },
+        { label: '1 тиждень', value: 'W' },
+        { label: '1 місяць', value: 'M' },
+    ];
+
+    const handleSubmit = async () => {
         try {
-            const request: TradingTaskSimulationRequest = {
-                ...values,
+            const values = await form.validateFields();
+            await createSimulation({
                 taskId,
-            };
-            await checkProfit(request);
+                ...values,
+            }).unwrap();
+            form.resetFields();
+            onClose();
         } catch (error) {
-            console.error('Помилка при перевірці профіту:', error);
+            console.error('Failed to create simulation:', error);
         }
     };
 
     return (
         <Modal
-            title="Перевірка профіту"
+            title="Створення симуляції"
             open={isOpen}
             onCancel={onClose}
-            footer={null}
+            onOk={handleSubmit}
+            confirmLoading={isLoading}
+            okText="Створити"
+            cancelText="Скасувати"
         >
             <Form
                 form={form}
-                onFinish={handleSubmit}
                 layout="vertical"
                 initialValues={{
-                    betSize: 5.5,
+                    takeProfit: 1,
                     stopLoss: 0.5,
-                    takeProfit: 0.5,
-                    interval: 300   
+                    betSize: 100,
+                    interval: '1',
                 }}
             >
-
-
                 <Form.Item
-                    label="Розмір ставки "
-                    name="betSize"
-                    rules={[{ required: true, message: 'Вкажіть розмір ставки' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={1}
-                        max={100}
-                        step={0.1}
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    label="Стоп-лосс (%)"
-                    name="stopLoss"
-                    rules={[{ required: true, message: 'Вкажіть стоп-лосс' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={0.1}
-                        max={100}
-                        step={0.1}
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    label="Тейк-профіт (%)"
-                    name="takeProfit"
-                    rules={[{ required: true, message: 'Вкажіть тейк-профіт' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={0.1}
-                        max={100}
-                        step={0.1}
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    label="Інтервал"
                     name="interval"
-                    rules={[{ required: true, message: 'Вкажіть інтервал' }]}
+                    label="Часовий інтервал"
+                    rules={[{ required: true }]}
                 >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={200}
-                        max={1000}
-                        step={100}
-                    />
+                    <Select options={timeframeOptions} />
+                </Form.Item>
+                <Form.Item
+                    name="takeProfit"
+                    label="Тейк-профіт (%)"
+                    rules={[{ required: true }]}
+                >
+                    <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
                 </Form.Item>
 
-                <Form.Item>
-                    <Button 
-                        type="primary" 
-                        htmlType="submit" 
-                        loading={isLoading}
-                        block
-                    >
-                        Перевірити
-                    </Button>
+                <Form.Item
+                    name="stopLoss"
+                    label="Стоп-лосс (%)"
+                    rules={[{ required: true }]}
+                >
+                    <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+
+                <Form.Item
+                    name="betSize"
+                    label="Розмір ставки (USDT)"
+                    rules={[{ required: true }]}
+                >
+                    <InputNumber min={1} style={{ width: '100%' }} />
                 </Form.Item>
             </Form>
-
-            {simulationResult && (
-                <div>
-                    <h3>Результати симуляції:</h3>
-                    <p>Прибуток: {simulationResult.result.profit.toFixed(2)}</p>
-                    <p>Успішність: {simulationResult.result.successRate}%</p>
-                    <p>Всього угод: {simulationResult.result.total}</p>
-                    <p>Прибуткових: {simulationResult.result.profitable}</p>
-                    <p>Збиткових: {simulationResult.result.unprofitable}</p>
-                </div>
-            )}
         </Modal>
     );
 };

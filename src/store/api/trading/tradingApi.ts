@@ -44,12 +44,13 @@ export const tradingApi = createApi({
     }),
 
     // Симуляція торгівлі
-    tradingSimulation: builder.query<TradingTaskResult, TradingTaskSimulationRequest>({
+    tradingSimulation: builder.mutation<TradingTaskResult, TradingTaskSimulationRequest>({
       query: ({ taskId, ...params }) => ({
         url: `/${taskId}/tradeSimulation`,
-        params,
+        method: 'POST',
+        body: params,
       }),
-      providesTags: ['Simulations'],
+      invalidatesTags: ['Simulations'],
     }),
 
     // Отримання списку симуляцій для завдання
@@ -73,8 +74,7 @@ export const {
   useGetTradingStatusQuery,
   useLazyGetAllTasksQuery,
   useGetAllTasksQuery,
-  useTradingSimulationQuery,
-  useLazyTradingSimulationQuery,    
+  useTradingSimulationMutation,
   useGetTradeSimulationListQuery,
   useLazyGetTradeSimulationListQuery,
   useGetTradeSimulationByIdQuery,

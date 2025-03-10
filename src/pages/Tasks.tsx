@@ -116,7 +116,10 @@ const Tasks = () => {
                     {record.status === 'ACTIVE' ? (
                         <Button 
                             danger
-                            onClick={() => stopTrading(record.taskId)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                stopTrading(record.taskId)
+                            }}
                         >
                             Зупинити
                         </Button>
