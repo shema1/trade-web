@@ -18,6 +18,24 @@ export interface TradingTaskParams {
     maxIterations: number;
 }
 
+// Параметри для запуску аналізу
+export interface StartAnalysisTaskRequest {
+    symbols: string[];
+    timeframe: KlineIntervalV3;
+    klinePeriod: number;
+    longProbabilityValue: number;
+    shortProbabilityValue: number;
+    maxIterations: number;
+    orderLimit: number;
+}
+
+// Параметри для запуску торгівлі
+export interface StartTradingTaskRequest extends StartAnalysisTaskRequest {
+    betSize: number;
+    stopLoss: number;
+    takeProfit: number;
+}
+
 // Торгове завдання (відповідає TradingTask schema)
 export interface TradingTask {
     _id?: string; // MongoDB ID
@@ -29,7 +47,7 @@ export interface TradingTask {
     findOrders: number;
     createdAt: Date;
     completedAt?: Date;
-    params?: TradingTaskParams;
+    params?: StartAnalysisTaskRequest | StartTradingTaskRequest;
     error?: string;
 }
 

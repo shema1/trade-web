@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   TradingTask,
-  StartTradingRequest,
+  StartAnalysisTaskRequest,
+  StartTradingTaskRequest,
   TradingTaskResult,
   TradingTaskSimulationRequest,
 } from './tradingInterface';
@@ -12,8 +13,8 @@ export const tradingApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/trading' }),
   tagTypes: ['Tasks', 'Simulations'],
   endpoints: (builder) => ({
-    // Запуск торгівлі
-    startAnalysis: builder.mutation<TradingTask, StartTradingRequest>({
+    // Запуск аналізу
+    startAnalysis: builder.mutation<TradingTask, StartAnalysisTaskRequest>({
       query: (body) => ({
         url: '/start-analysis',
         method: 'POST',
@@ -22,8 +23,18 @@ export const tradingApi = createApi({
       invalidatesTags: ['Tasks'],
     }),
 
-    // Зупинка торгівлі
-    stopAnalysis: builder.mutation<void, string>({
+    // Запуск торгівлі
+    startTrading: builder.mutation<TradingTask, StartTradingTaskRequest>({
+      query: (body) => ({
+        url: '/start-trading',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Tasks'],
+    }),
+
+    // Зупинка завдання
+    stopTask: builder.mutation<void, string>({
       query: (taskId) => ({
         url: `/${taskId}`,
         method: 'DELETE',
@@ -31,7 +42,7 @@ export const tradingApi = createApi({
       invalidatesTags: ['Tasks'],
     }),
 
-    // Отримання всіх торгових завдань
+    // Отримання всіх завдань
     getAllTasks: builder.query<TradingTask[], void>({
       query: () => '/',
       providesTags: ['Tasks'],
@@ -47,15 +58,15 @@ export const tradingApi = createApi({
       invalidatesTags: ['Simulations'],
     }),
 
-    // Отримання списку симуляцій для завдання
+    // Отримання списку симуляцій
     getTradeSimulationList: builder.query<TradingTaskResult[], string>({
       query: (taskId) => `/${taskId}/profitlist`,
       providesTags: ['Simulations'],
     }),
 
-    // Отримання конкретної симуляції за ID
+    // Отримання деталей симуляції
     getTradeSimulationById: builder.query<TradingTaskResult, string>({
-      query: (id) => `/simulation/${id}`,
+      query: (id) => `/profit/${id}`,
       providesTags: ['Simulations'],
     }),
   }),
@@ -64,9 +75,10 @@ export const tradingApi = createApi({
 // Експорт хуків для використання в компонентах
 export const {
   useStartAnalysisMutation,
-  useStopAnalysisMutation,
-  useLazyGetAllTasksQuery,
+  useStartTradingMutation,
+  useStopTaskMutation,
   useGetAllTasksQuery,
+  useLazyGetAllTasksQuery,
   useTradingSimulationMutation,
   useGetTradeSimulationListQuery,
   useLazyGetTradeSimulationListQuery,

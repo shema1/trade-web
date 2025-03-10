@@ -64,6 +64,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           longProbabilityValue: 60,
           shortProbabilityValue: 60,
           maxIterations: 1,
+          orderLimit: 1000,
         }}
       >
         {/* <Form.Item
@@ -114,6 +115,14 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
+
+        <Form.Item
+          name="orderLimit"
+          label="Максимальна кількість ордерів"
+          rules={[{ required: true }]}
+        >
+          <InputNumber min={1} style={{ width: '100%' }} />
+        </Form.Item>  
       </Form>
     </Modal>
   );

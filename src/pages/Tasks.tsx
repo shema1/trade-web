@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { useLazyGetAllTasksQuery, useStartAnalysisMutation, useStopAnalysisMutation, } from '../store/api/trading/tradingApi';
-import { TradingTask, StartTradingRequest } from '../store/api/trading/tradingInterface';
+import { useLazyGetAllTasksQuery, useStartAnalysisMutation, useStartTradingMutation, useStopTaskMutation } from '../store/api/trading/tradingApi';
+import { TradingTask, StartAnalysisTaskRequest, StartTradingTaskRequest } from '../store/api/trading/tradingInterface';
 import CreateTaskModal from '../components/CreateTaskModal';
 import CreateTradingTaskModal from '../components/CreateTradingTaskModal';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +11,9 @@ const Tasks = () => {
     const navigate = useNavigate();
     const [getAllTasks, { data: tasks, isLoading }] = useLazyGetAllTasksQuery();
 
-
-    const [startTrading, { isLoading: isStarting }] = useStartAnalysisMutation();
-    const [stopTrading] = useStopAnalysisMutation();
+    const [startAnalysis, { isLoading: isAnalysisStarting }] = useStartAnalysisMutation();
+    const [startTrading, { isLoading: isTradingStarting }] = useStartTradingMutation();
+    const [stopTask] = useStopTaskMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTradingModalOpen, setIsTradingModalOpen] = useState(false);
 
@@ -21,26 +21,25 @@ const Tasks = () => {
         console.log(tasks);
     }, [tasks]);
 
-
     useEffect(() => {
         getAllTasks();
     }, []);
 
-    const handleCreateTask = async (values: StartTradingRequest) => {
+    const handleCreateAnalysisTask = async (values: StartAnalysisTaskRequest) => {
         try {
-            await startTrading(values).unwrap();
+            await startAnalysis(values).unwrap();
             setIsModalOpen(false);
         } catch (error) {
-            console.error('Failed to create task:', error);
+            console.error('Failed to create analysis task:', error);
         }
     };
 
-    const handleCreateTradingTask = async (values: any) => {
+    const handleCreateTradingTask = async (values: StartTradingTaskRequest) => {
         try {
             await startTrading(values).unwrap();
             setIsTradingModalOpen(false);
         } catch (error) {
-            console.error('Failed to create task:', error);
+            console.error('Failed to create trading task:', error);
         }
     };
 
@@ -120,6 +119,12 @@ const Tasks = () => {
             render: (_, a) => a.params?.klinePeriod
         },
         {
+            title: 'Ліміт',
+            dataIndex: 'orderLimit',
+            key: 'orderLimit',
+            render: (_, a) => a.params?.orderLimit || '-'
+        },
+        {
             title: 'Дії',
             key: 'actions',
             render: (_, record) => (
@@ -129,7 +134,7 @@ const Tasks = () => {
                             danger
                             onClick={(e) => {
                                 e.stopPropagation();
-                                stopTrading(record.taskId)
+                                stopTask(record.taskId)
                             }}
                         >
                             Зупинити
@@ -182,14 +187,14 @@ const Tasks = () => {
             <CreateTaskModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSubmit={handleCreateTask}
-                isLoading={isStarting}
+                onSubmit={handleCreateAnalysisTask}
+                isLoading={isAnalysisStarting}
             />
             <CreateTradingTaskModal
                 isOpen={isTradingModalOpen}
                 onClose={() => setIsTradingModalOpen(false)}
                 onSubmit={handleCreateTradingTask}
-                isLoading={false}
+                isLoading={isTradingStarting}
             />
         </div>
     );

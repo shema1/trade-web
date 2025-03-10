@@ -37,7 +37,11 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      onSubmit({ ...values, symbols: symbols?.map((symbol) => symbol.symbol, ), runTrading: true });
+      onSubmit({ 
+        ...values, 
+        symbols: symbols?.map(symbol => symbol.symbol),
+        orderLimit: values.orderLimit || 1000
+      });
       form.resetFields();
     } catch (error) {
       console.error('Validation failed:', error);
@@ -46,7 +50,7 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
 
   return (
     <Modal
-      title="Створення нового торгового завдання"
+      title="Створення торгового завдання"
       open={isOpen}
       onCancel={onClose}
       onOk={handleSubmit}
@@ -59,13 +63,15 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         form={form}
         layout="vertical"
         initialValues={{
-          betSize: 5,
           timeframe: '1',
           klinePeriod: 1000,
           longProbabilityValue: 60,
           shortProbabilityValue: 60,
           maxIterations: 1,
-          ordersLimit: 1000,
+          orderLimit: 1000,
+          betSize: 5,
+          stopLoss: 0.5,
+          takeProfit: 1,
         }}
       >
         {/* <Form.Item
@@ -118,19 +124,36 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         </Form.Item>
 
         <Form.Item
-          name="ordersLimit"
-          label="Максимальна кількість ордерів"
+          name="orderLimit"
+          label="Ліміт ордерів"
           rules={[{ required: true }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
+
         <Form.Item
           name="betSize"
-          label="Розмір ставки"
+          label="Розмір ставки (USDT)"
           rules={[{ required: true }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
-        </Form.Item>    
+        </Form.Item>
+
+        <Form.Item
+          name="stopLoss"
+          label="Стоп-лосс (%)"
+          rules={[{ required: true }]}
+        >
+          <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
+        </Form.Item>
+
+        <Form.Item
+          name="takeProfit"
+          label="Тейк-профіт (%)"
+          rules={[{ required: true }]}
+        >
+          <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
+        </Form.Item>
       </Form>
     </Modal>
   );
