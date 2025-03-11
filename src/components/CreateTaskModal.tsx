@@ -65,6 +65,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           shortProbabilityValue: 60,
           maxIterations: 1,
           orderLimit: 1000,
+          betSize: 5.5,
         }}
       >
         {/* <Form.Item
@@ -122,6 +123,14 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           rules={[{ required: true }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
+        </Form.Item>  
+
+        <Form.Item
+          name="betSize"
+          label="Розмір ставки"
+          rules={[{ required: true }]}
+        > 
+          <InputNumber min={5.5} style={{ width: '100%' }} />
         </Form.Item>  
       </Form>
     </Modal>

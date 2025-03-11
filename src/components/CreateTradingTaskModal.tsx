@@ -63,15 +63,15 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         form={form}
         layout="vertical"
         initialValues={{
-          timeframe: '1',
+          timeframe: '5',
           klinePeriod: 1000,
-          longProbabilityValue: 60,
-          shortProbabilityValue: 60,
+          longProbabilityValue: 67,
+          shortProbabilityValue: 67,
           maxIterations: 1,
-          orderLimit: 1000,
+          orderLimit: 1,
           betSize: 5,
-          stopLoss: 0.5,
-          takeProfit: 1,
+          stopLoss: 2,
+          takeProfit: 2,
         }}
       >
         {/* <Form.Item
