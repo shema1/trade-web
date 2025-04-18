@@ -40,7 +40,8 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
       onSubmit({ 
         ...values, 
         symbols: symbols?.map(symbol => symbol.symbol),
-        orderLimit: values.orderLimit || 1000
+        orderLimit: values.orderLimit || 1000,
+        keepActive: true,
       });
       form.resetFields();
     } catch (error) {

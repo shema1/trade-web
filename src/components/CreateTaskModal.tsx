@@ -1,6 +1,7 @@
 import { Modal, Form, Input, Select, InputNumber } from 'antd';
 import { StartTradingRequest } from '../store/api/trading/tradingInterface';
 import { useGetFuturesSymbolsQuery } from '../store/api/bybit/bybitApi';
+import { useEffect } from 'react';
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -34,6 +35,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const [form] = Form.useForm();
   const { data: symbols, isLoading: isSymbolsLoading } = useGetFuturesSymbolsQuery();
 
+  useEffect(() => {
+    console.log('symbols', symbols?.map((symbol) => symbol.symbol) );
+  }, [symbols]);
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
