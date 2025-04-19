@@ -13,10 +13,12 @@ import {
     TradingTaskStatus
 } from '../store/api/trading-tasks/trading-tasks-Interface';
 import CreateTradingTaskModal from '../components/CreateTradingTaskModal';
+import {UndoOutlined} from '@ant-design/icons';
+
 
 const Tasks = () => {
     const navigate = useNavigate();
-    const { data: tasks, isLoading } = useGetAllTasksQuery();
+    const { data: tasks, isLoading, refetch } = useGetAllTasksQuery();
     const [createTask, { isLoading: isCreating }] = useCreateTaskMutation();
     const [stopTask] = useStopTaskMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,7 +111,7 @@ const Tasks = () => {
                 const total = record.completedOrders.length;
                 const res = record.analysisResultsProfit?.length * 100 / total
                 return <div>
-                    <div>{res.toFixed(2)}%</div>
+                    <div>{res ? res.toFixed(2) : 0}%</div>
                 </div>
             },
 
@@ -121,7 +123,6 @@ const Tasks = () => {
             render: (params) => (
                 <div>
                     <div>Таймфрейм: {params.timeframe}</div>
-                    <div>Період: {params.klinePeriod}</div>
                     <div>Ставка: {params.betSize}</div>
                     <div>SL: {params.stopLoss}%</div>
                     <div>TP: {params.takeProfit}%</div>
@@ -160,6 +161,15 @@ const Tasks = () => {
                     >
                         Створити торгове завдання
                     </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => {
+                            console.log('Оновити');
+                            refetch();
+                        } }>
+                        <UndoOutlined />
+                    </Button>
+
                 </Space>
             </div>
 

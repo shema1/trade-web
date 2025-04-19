@@ -16,6 +16,7 @@ export enum TradingTaskRecommendation {
 }
 
 
+
 export interface Order {
   symbol: string;
   orderType: string;
@@ -70,8 +71,8 @@ export interface CreateTradingTaskDto {
     takeProfit: number;
     maxIterations?: number;
     orderLimit?: number;
-    keepActive?: boolean;
-    testMode?: boolean;
+    // keepActive?: boolean;
+    // testMode?: boolean;
   }
   
   export interface UpdateTradingTaskDto {

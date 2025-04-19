@@ -1,11 +1,10 @@
-import { Modal, Form, Input, Select, InputNumber } from 'antd';
-import { StartTradingRequest } from '../store/api/trading/tradingInterface';
-import { useGetFuturesSymbolsQuery } from '../store/api/bybit/bybitApi';
+import { Modal, Form, Select, InputNumber } from 'antd';
+import { CreateTradingTaskDto } from '../store/api/trading-tasks/trading-tasks-Interface';
 
 interface CreateTradingTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: StartTradingRequest) => void;
+  onSubmit: (values: CreateTradingTaskDto) => void;
   isLoading: boolean;
 }
 
@@ -32,16 +31,14 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
   isLoading,
 }) => {
   const [form] = Form.useForm();
-  const { data: symbols, isLoading: isSymbolsLoading } = useGetFuturesSymbolsQuery();
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      onSubmit({ 
-        ...values, 
-        symbols: symbols?.map(symbol => symbol.symbol),
-        orderLimit: values.orderLimit || 1000,
+      onSubmit({
+        ...values,
         keepActive: true,
+        testMode: false,
       });
       form.resetFields();
     } catch (error) {
@@ -58,68 +55,31 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
       confirmLoading={isLoading}
       okText="Створити"
       cancelText="Скасувати"
-      loading={isSymbolsLoading}  
     >
       <Form
         form={form}
         layout="vertical"
         initialValues={{
-          timeframe: '5',
-          klinePeriod: 1000,
-          longProbabilityValue: 67,
-          shortProbabilityValue: 67,
-          maxIterations: 1,
-          orderLimit: 1,
+          timeframe: '60',
+          maxIterations: 9999999,
+          orderLimit: 10,
           betSize: 5,
           stopLoss: 2,
           takeProfit: 2,
         }}
       >
-        {/* <Form.Item
-          name="symbols"
-          label="Торгові пари"
-          rules={[{ required: true, message: 'Введіть торгові пари' }]}
-          help="Введіть пари через кому (наприклад: BTCUSDT, ETHUSDT)"
-        >
-          <Input placeholder="BTCUSDT, ETHUSDT" />
-        </Form.Item> */}
-
         <Form.Item
           name="timeframe"
           label="Часовий інтервал"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Виберіть часовий інтервал' }]}
         >
           <Select options={timeframeOptions} />
         </Form.Item>
 
         <Form.Item
-          name="klinePeriod"
-          label="Кількість свічок"
-          rules={[{ required: true }]}
-        >
-          <InputNumber min={1} max={1000} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item
-          name="longProbabilityValue"
-          label="Мінімальна ймовірність для довгої позиції (%)"
-          rules={[{ required: true }]}
-        >
-          <InputNumber min={50} max={100} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item
-          name="shortProbabilityValue"
-          label="Мінімальна ймовірність для короткої позиції (%)"
-          rules={[{ required: true }]}
-        >
-          <InputNumber min={50} max={100} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item
           name="maxIterations"
           label="Максимальна кількість ітерацій"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Введіть максимальну кількість ітерацій' }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
@@ -127,7 +87,7 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         <Form.Item
           name="orderLimit"
           label="Ліміт ордерів"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Введіть ліміт ордерів' }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
@@ -135,7 +95,7 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         <Form.Item
           name="betSize"
           label="Розмір ставки (USDT)"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Введіть розмір ставки' }]}
         >
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
@@ -143,7 +103,7 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         <Form.Item
           name="stopLoss"
           label="Стоп-лосс (%)"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Введіть стоп-лосс' }]}
         >
           <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
         </Form.Item>
@@ -151,7 +111,7 @@ const CreateTradingTaskModal: React.FC<CreateTradingTaskModalProps> = ({
         <Form.Item
           name="takeProfit"
           label="Тейк-профіт (%)"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: 'Введіть тейк-профіт' }]}
         >
           <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
         </Form.Item>
