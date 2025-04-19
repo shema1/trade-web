@@ -1,8 +1,8 @@
-import { List, Card, Table, Tag, Select, Space } from 'antd';
+import { Card, Table, Tag, Select, Space } from 'antd';
 import type { TableProps } from 'antd';
 import { useGetTaskLogsQuery } from '../../store/api/logs-data/logsApi';
-import { Log } from '../../store/api/logs-data/logs-interface';
-import { useState, useEffect } from 'react';
+import { Log, LogLevel } from '../../store/api/logs-data/logs-interface';
+import { useState } from 'react';
 
 interface TaskLogsProps {
     taskId: string;
@@ -18,12 +18,18 @@ const LOG_TYPES = {
 };
 
 const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
-    const [selectedType, setSelectedType] = useState<string | 'ALL'>('ALL');
-    const { data: logs = [], isLoading } = useGetTaskLogsQuery(taskId);
+    const [selectedLevel, setSelectedLevel] = useState<string>('ALL');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(100);
 
-    useEffect(() => {
-        console.log('logs', logs);
-    }, [logs]);
+    const { data, isLoading } = useGetTaskLogsQuery({
+        taskId,
+        level: selectedLevel !== 'ALL' ? selectedLevel as LogLevel : undefined,
+        page: currentPage,
+        limit: pageSize,
+        sortBy: 'timestamp',
+        sortOrder: 'desc',
+    });
 
     const columns: TableProps<Log>['columns'] = [
         {
@@ -31,7 +37,6 @@ const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
             dataIndex: 'timestamp',
             key: 'timestamp',
             render: (timestamp) => new Date(timestamp).toLocaleString('uk-UA'),
-            sorter: (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
             defaultSortOrder: 'descend',
         },
         {
@@ -43,11 +48,6 @@ const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
                     {LOG_TYPES[level]?.label || level}
                 </Tag>
             ),
-            filters: Object.entries(LOG_TYPES).map(([value, { label }]) => ({
-                text: label,
-                value,
-            })),
-            onFilter: (value, record) => record.type === value,
         },
         {
             title: 'Повідомлення',
@@ -55,22 +55,7 @@ const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
             key: 'message',
             width: '50%',
         },
-        {
-            title: 'Деталі',
-            dataIndex: 'details',
-            key: 'details',
-            render: (details) => {
-                if (typeof details === 'object') {
-                    return <pre>{JSON.stringify(details, null, 2)}</pre>;
-                }
-                return details;
-            },
-        },
     ];
-
-    const filteredLogs = selectedType === 'ALL' 
-        ? logs 
-        : logs.filter(log => log.type === selectedType);
 
     return (
         <Card>
@@ -78,7 +63,7 @@ const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
                 <Select 
                     defaultValue="ALL" 
                     style={{ width: 200 }} 
-                    onChange={setSelectedType}
+                    onChange={setSelectedLevel}
                 >
                     <Option value="ALL">Всі типи</Option>
                     {Object.entries(LOG_TYPES).map(([value, { label }]) => (
@@ -90,22 +75,28 @@ const TaskLogs: React.FC<TaskLogsProps> = ({ taskId }) => {
             </Space>
 
             <Table<Log>
-                dataSource={filteredLogs}
+                dataSource={data?.items || []}
                 columns={columns}
                 rowKey="_id"
                 loading={isLoading}
                 pagination={{
-                    defaultPageSize: 10,
+                    current: currentPage,
+                    pageSize: pageSize,
+                    total: data?.total || 0,
+                    onChange: (page, pageSize) => {
+                        setCurrentPage(page);
+                        setPageSize(pageSize);
+                    },
                     showSizeChanger: true,
                     showQuickJumper: true,
                 }}
                 expandable={{
                     expandedRowRender: (record) => (
                         <pre style={{ margin: 0 }}>
-                            {JSON.stringify(record.details, null, 2)}
+                            {JSON.stringify(record.metadata, null, 2)}
                         </pre>
                     ),
-                    rowExpandable: (record) => !!record.details,
+                    rowExpandable: (record) => !!record.metadata,
                 }}
             />
         </Card>

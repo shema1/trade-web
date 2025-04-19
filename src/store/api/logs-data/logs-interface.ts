@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export enum LogLevel {
   ERROR = 'ERROR',
   WARNING = 'WARNING',
@@ -6,12 +6,21 @@ export enum LogLevel {
   DEBUG = 'DEBUG',
 }
 
-export interface CreateLogDto {
-  message: string;
-  level: LogLevel;
-  taskId?: string;
-  metadata?: any;
-  timestamp: Date;
+export interface GetLogsParams {
+  level?: LogLevel;
+  message?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface LogsResponse {
+  items: Log[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
 }
 
 export interface Log {

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Log } from './logs-interface';
+import { Log, LogsResponse, GetLogsParams } from './logs-interface';
 
 // API для роботи з логами
 export const logsApi = createApi({
@@ -8,15 +8,21 @@ export const logsApi = createApi({
   tagTypes: ['Logs'],
   endpoints: (builder) => ({
     // Отримати всі логи
-    getAllLogs: builder.query<Log[], void>({
-      query: () => '',
+    getAllLogs: builder.query<LogsResponse, GetLogsParams>({
+      query: (params) => ({
+        url: '',
+        params,
+      }),
       providesTags: ['Logs'],
     }),
 
     // Отримати логи для конкретного завдання
-    getTaskLogs: builder.query<Log[], string>({
-      query: (taskId) => `/${taskId}`,
-      providesTags: (_result, _error, taskId) => [{ type: 'Logs', id: taskId }],
+    getTaskLogs: builder.query<LogsResponse, { taskId: string } & GetLogsParams>({
+      query: ({ taskId, ...params }) => ({
+        url: `/${taskId}`,
+        params,
+      }),
+      providesTags: (_result, _error, { taskId }) => [{ type: 'Logs', id: taskId }],
     }),
   }),
 });
