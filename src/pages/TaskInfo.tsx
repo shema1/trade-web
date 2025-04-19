@@ -2,9 +2,9 @@ import { useParams } from 'react-router-dom';
 import { Card, Tabs, Statistic, Row, Col, Tag, Spin } from 'antd';
 import { useGetTaskByIdQuery } from '../store/api/trading-tasks/trading-tasksApi';
 import OrdersInfo from '../components/TaskInfo/OrdersInfo';
+import { TradingTaskStatus } from '../store/api/trading-tasks/trading-tasks-Interface';
 import TaskLogs from '../components/TaskInfo/TaskLogs';
 import TaskStatistics from '../components/TaskInfo/TaskStatistics';
-import { TradingTaskStatus } from '../store/api/trading-tasks/trading-tasks-Interface';
 
 const { TabPane } = Tabs;
 

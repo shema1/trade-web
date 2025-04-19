@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Table, Button, Space, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import {
     TradingTaskStatus
 } from '../store/api/trading-tasks/trading-tasks-Interface';
 import CreateTradingTaskModal from '../components/CreateTradingTaskModal';
-import {UndoOutlined} from '@ant-design/icons';
+import { UndoOutlined } from '@ant-design/icons';
 
 
 const Tasks = () => {
@@ -166,7 +166,7 @@ const Tasks = () => {
                         onClick={() => {
                             console.log('Оновити');
                             refetch();
-                        } }>
+                        }}>
                         <UndoOutlined />
                     </Button>
 

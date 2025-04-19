@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { TradingTask } from '../trading/tradingInterface';
-import { CreateTradingTaskDto, UpdateTradingTaskDto } from './trading-tasks-Interface';
+import { CreateTradingTaskDto, TradingTask, UpdateTradingTaskDto } from './trading-tasks-Interface';
 
 // API для роботи з торгівлею
 export const tradingTasksApi = createApi({
