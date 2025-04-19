@@ -34,7 +34,7 @@ const Tasks = () => {
     };
 
     const handleRowClick = (record: TradingTask) => {
-        navigate(`/task-result/${record._id}`);
+        navigate(`/task-info/${record._id}`);
     };
 
     const columns: TableProps<TradingTask>['columns'] = [

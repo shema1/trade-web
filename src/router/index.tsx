@@ -3,6 +3,7 @@ import App from '../App';
 import Symbols from '../pages/Symbols';
 import Tasks from '../pages/Tasks';
 import TaskListResult from '../pages/TaskListResult';
+import TaskInfo from '../pages/TaskInfo';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -35,8 +36,12 @@ export const router = createBrowserRouter([
     ],
 
   },
+  // {
+  //   path: '/task-result/:taskId',
+  //   element: <TaskListResult />,
+  // },
   {
-    path: '/task-result/:taskId',
-    element: <TaskListResult />,
+    path: '/task-info/:taskId',
+    element: <TaskInfo />,
   },
 ]); 
