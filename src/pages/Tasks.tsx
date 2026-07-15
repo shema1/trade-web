@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import {
     useGetAllTasksQuery,
     useCreateTaskMutation,
-    useStopTaskMutation
+    useStopTaskMutation,
+    useLazyGetTaskByIdQuery
 } from '../store/api/trading-tasks/trading-tasksApi';
 import {
     TradingTask,
@@ -14,11 +15,14 @@ import {
 } from '../store/api/trading-tasks/trading-tasks-Interface';
 import CreateTradingTaskModal from '../components/CreateTradingTaskModal';
 import { UndoOutlined } from '@ant-design/icons';
+import { useCheckTaskOrdersOnCompleteMutation } from '../store/api/trading-manager/tradingManagerApi';
 
 
 const Tasks = () => {
     const navigate = useNavigate();
     const { data: tasks, isLoading, refetch } = useGetAllTasksQuery();
+    const [getTaskById, { isLoading: isGettingTask }] = useLazyGetTaskByIdQuery();
+    const [checkTaskOrdersOnComplete, { isLoading: isChecking }] = useCheckTaskOrdersOnCompleteMutation();
     const [createTask, { isLoading: isCreating }] = useCreateTaskMutation();
     const [stopTask] = useStopTaskMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +39,13 @@ const Tasks = () => {
 
     const handleRowClick = (record: TradingTask) => {
         navigate(`/task-info/${record._id}`);
+    };
+
+    const handleUpdateTask = async (record: TradingTask) => {
+        await checkTaskOrdersOnComplete(record._id).then(() => {
+            getTaskById(record._id)
+        });
+
     };
 
     const columns: TableProps<TradingTask>['columns'] = [
@@ -133,7 +144,7 @@ const Tasks = () => {
             title: 'Дії',
             key: 'actions',
             render: (_, record) => (
-                <Space>
+                <Space direction='vertical'>
                     {record.status === TradingTaskStatus.ACTIVE && (
                         <Button
                             danger
@@ -144,7 +155,17 @@ const Tasks = () => {
                         >
                             Зупинити
                         </Button>
+
                     )}
+                    <Button
+                        
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateTask( record)
+                        }}
+                    >
+                        Оновити
+                    </Button>
                 </Space>
             ),
         },
@@ -164,7 +185,6 @@ const Tasks = () => {
                     <Button
                         type="primary"
                         onClick={() => {
-                            console.log('Оновити');
                             refetch();
                         }}>
                         <UndoOutlined />
